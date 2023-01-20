@@ -1,0 +1,157 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/form.css') }}">
+<title>Event Page Form</title>
+{% endblock %}
+{% block body %}
+<div class="form-body">
+    <div class="row">
+      <div class="col">
+  
+        <h1>Event Page Information</h1>
+        <hr>
+  
+        <form action="{{ url_for('preview') }}" method="POST" enctype="multipart/form-data">
+  
+          <div class="form-group">
+            <label>School Name</label>
+            <input type="text" class="form-control" id="name" name="name" placeholder="Enter school name" value="{{ data.name }}" required>
+          </div>
+          <div class="form-group">
+            <label>School State</label>
+            <input type="text" class="form-control" id="state" name="state" placeholder="Enter school state" value="{{ data.state }}" required>
+          </div>
+          <div class="form-group">
+            <label>Event Date</label>
+            <input type="date" class="form-control" id="date" name="date" placeholder="Select event date" value="{{ data.form_date }}" readonly>
+          </div>
+
+          <div class="form-group">
+            <label>Event Type</label>
+            <br>
+            <div class="radio-group">
+              <input type="radio" id="pickup" name="is_pickup_only" value="True" required {{ "checked" if data.is_pickup_only }}>
+              <label for="True">Pickup Only</label>
+              <input type="radio" id="volunteer" name="is_pickup_only" value="False" required {{ "checked" if not data.is_pickup_only }}>
+              <label for="False">Volunteer Planting (Recommended)</label>
+              <p class="learn-more">Learn more about event types <a href="https://drive.google.com/file/d/1gB2JHnyeO8xIg-VltFA1jWU7DopjMyfU/view?usp=sharing" target="blank">here</a>.</p>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Sapling Goal</label>
+            <input type="number" class="form-control" id="tree_goal" name="tree_goal" placeholder="Enter tree goal" value="{{ data.tree_goal }}" readonly>
+          </div>
+
+          <div class="form-group">
+            <label>"About Us" Media Type</label>
+            <br>
+            <div class="radio-group">
+              <input type="radio" id="text" name="media_type" onchange="selectMediaType(this);" value="Text" required>
+              <label for="Text">Text</label>
+              <input type="radio" id="video" name="media_type" onchange="selectMediaType(this);" value="Video" required>
+              <label for="Video">Video</label>
+            </div>
+          </div>
+          <div class="form-group" id="text-group">
+            <label id="text-text">Text</label>
+            <input type="text" class="form-control" id="text-box" name="bio" placeholder="About Us Text" value="{{ data.bio }}">
+          </div>
+          <div class="form-group" id="video-group">
+            <label id="video-text">Video</label>
+            <input type="text" class="form-control" id="video-box" name="video" placeholder="About Us Video Link" value="{{ data.display_video }}">
+          </div>
+  
+          <div class="form-group">
+            <label>Display Email</label>
+            <input type="email" class="form-control" id="display_email" name="display_email" placeholder="Enter contact email to display" value="{{ data.display_email }}" required>
+          </div>
+  
+
+          <div id="host-fields">
+            <div class="host-field">
+              <h4>Team Member 1 (Primary)</h4>
+              <input id="host1-uuid" type="hidden" name="host1_uuid" required>
+              <div class="form-group">
+                <label>Name</label>
+                <input id="host1-name" type="text" class="form-control" name="host1_name" placeholder="" required>
+              </div>
+              <div class="form-group">
+                <label>Bio</label>
+                <input id="host1-bio" type="text" class="form-control" name="host1_bio" placeholder="" required>
+              </div>
+              <div class="form-group">
+                <label>Photo (Instructions <a target="_blank" href="{{ url_for('static', filename='pdf/photo_instructions.pdf') }}">here</a>)</label>
+                <!-- <input type="file" class="form-control" name="host1_photo" placeholder=""> -->
+                <input id="host1-photo" type="text" class="form-control" name="host1_photo" placeholder="Enter Google Drive file ID" onchange="openModalCheck(this)">
+                <div class="inline-input-group">
+                  <div  style="display:none" class="form-group">
+                    <label>x-offset</label>
+                    <input id="host1-photo-x" type="text" class="form-control" name="host1_photo_x" value="0" readonly>
+                  </div>
+                  <div  style="display:none" class="form-group">
+                    <label>y-offset</label>
+                    <input id="host1-photo-y" type="text" class="form-control" name="host1_photo_y" value="0" readonly>
+                  </div>
+                  <div  style="display:none" class="form-group">
+                    <label>zoom</label>
+                    <input id="host1-photo-zoom" type="text" class="form-control" name="host1_photo_zoom" value="100" readonly>
+                  </div>
+                  <button type="button" id="host1-crop-button" class="crop-button">Adjust photo position and zoom</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div id="crop-popup" class="modal">
+
+            <!-- Modal content -->
+            <div class="modal-content">
+              <div class="circleCropper" id="crop-image">
+              </div>
+              <img id="image-tester" class="image-tester" onerror="imageError()">
+              <p id="modal-image-error">Error: Image could not be loaded. Please make sure a valid Google Drive file ID (not link) is entered, and the image is shared to everyone with link.</p>
+              <p>Drag the image to shift its position, and use the slider below to zoom in/out.</p>
+              <input type="range" min="50" max="300" value="100" class="slider" id="zoom-slider">
+              <button type="button" id="confirm-image" class="crop-button">Done</button>
+            </div>
+          
+          </div>
+
+          <div id="error-popup" class="modal">
+
+            <!-- Modal content -->
+            <div class="modal-content">
+              <span class="close">&times;</span>
+              <p>Please enter a Google Drive file ID in the photo field.</p>
+            </div>
+          
+          </div>
+
+          <button type="button" id="add-host-fields">Add Team Member</button>
+          <button type="button" id="remove-host-fields">Remove Team Member</button>
+          <!-- <p><img id="output" width="200" /></p> -->
+
+          <div id="tree-fields">
+            <div class="form-group">
+              <label>Tree 1 Species</label>
+              <input id="tree1-species" type="text" class="form-control" name="tree1_species" placeholder="" required readonly>
+            </div>
+          </div>
+
+          <br>
+          <button type="submit">Preview Event Page</button>
+  
+        </form>
+  
+      </div>
+    </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script type="text/javascript">
+    var data = JSON.parse('{{data | tojson}}');
+</script>
+<script src="{{ url_for('static', filename='js/event-page/form.js') }}"></script>
+{% endblock %}
