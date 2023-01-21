@@ -5,6 +5,13 @@ Minimal Flask template for Tree-Plenish. Generic Tree-Plenish styles are include
 Detailed setup guide for beginners below. Note that the commands are for linux/unix systems, so you may need to google the equivalent command for your machine.
 
 ## Setup guide
+Make sure you have git, python3.7+, and pip installed.
+
+Click `Use this Template` > `Create a New Repository`, then set the owner to be `tree-plenish` and give it a new name. In your new repository, click `Clone` and copy the HTTP URL. Then run
+```
+git clone <YOUR_HTTP_URL>
+cd <YOUR_REPO_NAME>
+```
 ### Database connectivity? 
 If your app does not need to connect to the database, remove the `tech_team_database` submodule, the `.gitmodules` file, and the DatabaseSQLOperations import in `application.py`.
 ### Set up database credentials
@@ -40,7 +47,7 @@ Install required dependencies for the Flask app into the virtual environment:
 ```
 pip3 install -r requirements.txt
 ```
-To deactivate the virtual environment:
+To deactivate the virtual environment later:
 ```
 deactivate
 ```
@@ -117,11 +124,13 @@ instead of
 ### Helpful tips
 It may be convenient to set an alias for the setup commands to use whenever you start developing. For example, in your shell configuration file (e.g. `~/.bashrc`, `~/.zshrc`, etc.):
 ```
-cd <put the absolute path to this repo here!>
-source venv/bin/activate
-setenv FLASK_ENV=development
-setenv FLASK_APP=application.py
-setenv AWS_PROFILE=tree-plenish
+tp-app () {
+    cd <put the absolute path to your local copy of the repo here!>
+    source venv/bin/activate
+    setenv FLASK_ENV=development
+    setenv FLASK_APP=application.py
+    setenv AWS_PROFILE=tree-plenish
+}
 ```
 
 ### Resources

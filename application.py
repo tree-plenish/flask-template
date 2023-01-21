@@ -17,7 +17,11 @@ application = Flask(__name__)
 @application.route('/index')
 @application.route('/')
 def index():
-    return render_template("index.html")
+    data = {
+        'name' : 'Tree-Plenish',
+        'number' : 123
+    }
+    return render_template("index.html", data=data)
 
 if __name__ == "__main__":
     application.run()
