@@ -9,7 +9,7 @@ Make sure you have git, python3.7+, and pip installed.
 
 Click `Use this Template` > `Create a New Repository`, then set the owner to be `tree-plenish` and give it a new name. In your new repository, click `Clone` and copy the HTTP URL. Then run
 ```
-git clone <YOUR_HTTP_URL>
+git clone <YOUR_HTTP_URL> --recurse-submodules 
 cd <YOUR_REPO_NAME>
 ```
 ### Database connectivity? 
