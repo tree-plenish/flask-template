@@ -93,6 +93,7 @@ Do this only when you are ready to deploy your app!
 - Replace `<ENVIRONMENT_NAME_HERE>` with the name of your elastic beanstalk flask environment
 - Replace `<APP_NAME_HERE>` with the name of your flask app
 - Push changes to github
+- If this is the first time deploying/creating the environment AND your app uses TpSQL functions, make sure to give the Elastic Beanstalk environment an IAM instance profile that allows access to the database (e.g. event-page-form-role). To do this, go to Elastic Beanstalk > [choose your environment] > Configuration > Security. Otherwise, your app will not have permission to access the database.
 
 App updates will automatically re-deploy to Elastic Beanstalk on every push to the main branch via the Github actions workflow in `.github/workflows/main.yml`. Relevant updates to dependencies (like `tech_team_database`) will require manual re-run of the `deploy` workflow to update the deployed version, since the workflow checks out the latest version for deployment. Any files in the repository that should not be deployed should be added to `.ebignore`.
 
