@@ -93,7 +93,10 @@ Do this only when you are ready to deploy your app!
 - Replace `<ENVIRONMENT_NAME_HERE>` with the name of your elastic beanstalk flask environment
 - Replace `<APP_NAME_HERE>` with the name of your flask app
 - Push changes to github
-- If this is the first time deploying/creating the environment AND your app uses TpSQL functions, make sure to give the Elastic Beanstalk environment an IAM instance profile that allows access to the database (e.g. event-page-form-role). To do this, go to Elastic Beanstalk > [choose your environment] > Configuration > Security. Otherwise, your app will not have permission to access the database.
+- If this is the first time deploying/creating the environment AND your app uses TpSQL functions, make sure to give the Elastic Beanstalk environment an IAM instance profile that allows access to the database (e.g. event-page-form-role). To do this, go to `Elastic Beanstalk > [choose your environment] > Configuration > Service Access` and change the EC2 instance profile. Otherwise, your app will not have permission to access the database.
+- If your app uses environment variables, such as an API token, you can add them under `Elastic Beanstalk > [choose your environment] > Configuration > Updates, monitoring, and logging > Environment properties`.
+
+Note: Although the workflow script will automatically create the environment (without database-access IAM profile and environment variables), typically creating the environment with all the correct properties before running the workflow the first time is faster than updating the environment with the correct properties after it is generated because the environment will be stuck in degraded health.
 
 App updates will automatically re-deploy to Elastic Beanstalk on every push to the main branch via the Github actions workflow in `.github/workflows/main.yml`. Relevant updates to dependencies (like `tech_team_database`) will require manual re-run of the `deploy` workflow to update the deployed version, since the workflow checks out the latest version for deployment. Any files in the repository that should not be deployed should be added to `.ebignore`.
 
@@ -122,7 +125,10 @@ instead of
 - `.ebignore`: any files or directories listed in this file will be ignored by elastic beanstalk (will not be included in deployed app)
 - `.gitmodules`: contains submodule mapping for tech_team_database
 
-### Helpful tips
+## Helpful tips
+
+### Quick & easy development
+
 It may be convenient to set an alias for the setup commands to use whenever you start developing. For example, in your shell configuration file (e.g. `~/.bashrc`, `~/.zshrc`, etc.):
 ```
 tp-app () {
@@ -133,6 +139,10 @@ tp-app () {
     setenv AWS_PROFILE=tree-plenish
 }
 ```
+
+### Troubleshooting deployed app
+
+To troubleshoot an app that works locally but not when deployed on elastic beanstalk, take a look at the environment logs in aws (typically looking at `/var/log/web.stdout.log` should help). If there is a 502 error, usually the issue is missing dependencies in `requirements.txt`, missing environment variables, or missing permissions for the app to access the database (see deployment instructions above)
 
 ### Resources
 - Flask: https://flask.palletsprojects.com/en/2.2.x/
